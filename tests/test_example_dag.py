@@ -86,7 +86,6 @@ class TestExampleDAG(unittest.TestCase):
             index=False
         )
 
-
         mock_conf = MagicMock()
         mock_conf.sink_table_avg_age = test_sink
 
@@ -95,6 +94,11 @@ class TestExampleDAG(unittest.TestCase):
             postgres_engine
         ).load_avg_age(
             PostgresQuery[AvgAge](postgres_engine, f"SELECT * FROM {test_source}")
+        )
+
+        assert_frame_equal(
+            test_dataframe,
+            PostgresQuery[AvgAge](postgres_engine, f"SELECT * FROM {test_source}").get_dataframe()
         )
 
 
