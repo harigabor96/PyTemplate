@@ -54,7 +54,7 @@ readme = "README.md"
 # 'Programming Language' classifiers in this file, 'pip install' will check this
 # and refuse to install the project if the version does not match. See
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 
 # This is either text indicating the license for the distribution, or a file
 # that contains the license.
@@ -116,7 +116,17 @@ classifiers = [
 #
 # For an analysis of this field vs pip's requirements files see:
 # https://packaging.python.org/discussions/install-requires-vs-requirements/
-dependencies = ["peppercorn"]
+dependencies = [
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.2",
+  "alembic>=1.14"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "testcontainers[postgres]>=4.0",
+]
 
 # List additional groups of dependencies here (e.g. development
 # dependencies). Users will be able to install these using the "extras"
@@ -160,3 +170,8 @@ sample = "sample:main"
 # If there are data files included in your packages that need to be
 # installed, specify them here.
 package-data = { "sample" = ["*.dat"] }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
