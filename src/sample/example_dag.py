@@ -38,5 +38,6 @@ class ExampleDAG:
         with self.postgres_engine.begin() as conn:
             conn.execute(text(f"""
                 INSERT INTO {self.conf.sink_table_avg_age} (age)
+                SELECT age
                 FROM ({transform_avg_age_query.get_text()})
             """))
