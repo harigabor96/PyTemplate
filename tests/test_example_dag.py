@@ -14,13 +14,12 @@ class TestExampleDAG(unittest.TestCase):
     @with_postgres
     def test_extract_user(self, postgres_engine):
         test_table = "test_table"
-        test_dataframe = User.validate(pd.DataFrame({
+
+        User.validate(pd.DataFrame({
             "id": [1, 2, 3],
             "name": ["Alice", "Bob", "Charlie"],
             "age": [25, 30, 35],
-        }))
-
-        test_dataframe.to_sql(
+        })).to_sql(
             con=postgres_engine,
             name=test_table,
             index=False
@@ -28,13 +27,20 @@ class TestExampleDAG(unittest.TestCase):
 
         mock_conf = MagicMock()
         mock_conf.source_table_user = test_table
-
-        assert_frame_equal(
-            test_dataframe,
+        result = (
             ExampleDAG(
                 mock_conf,
                 postgres_engine
             ).extract_user().get_dataframe()
+        )
+
+        assert_frame_equal(
+            User.validate(pd.DataFrame({
+                "id": [1, 2, 3],
+                "name": ["Alice", "Bob", "Charlie"],
+                "age": [25, 30, 35],
+            })),
+            result
         )
 
     @with_postgres
