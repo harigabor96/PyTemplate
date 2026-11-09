@@ -9,7 +9,7 @@ class User(pa.DataFrameModel):
         coerce = False
 
 class AvgAge(pa.DataFrameModel):
-    avg_age: int
+    avg_age: float
     class Config: # pyright: ignore [reportIncompatibleVariableOverride]
         strict = True
         coerce = False

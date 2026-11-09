@@ -30,7 +30,7 @@ class ExampleDAG:
 
     def transform_avg_age(self, extract_user_query: PostgresQuery[User]) -> PostgresQuery[AvgAge]:
         return PostgresQuery[AvgAge](self.postgres_engine, f"""
-            SELECT age
+            SELECT AVG(age) AS avg_age
             FROM ({extract_user_query.get_text()})
         """)
 
