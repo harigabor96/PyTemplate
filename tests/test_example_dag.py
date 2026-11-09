@@ -112,7 +112,7 @@ class TestExampleDAG(unittest.TestCase):
         )
 
     @with_postgres
-    def test_load_sink(self, postgres_engine):
+    def test_load_avg_age(self, postgres_engine):
         test_source = "test_source"
         test_sink = "test_sink"
 
