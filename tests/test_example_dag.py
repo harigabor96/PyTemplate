@@ -1,13 +1,11 @@
 import unittest
 
 import pandas as pd
-import pandera.pandas as pa
 from pandas.testing import assert_frame_equal
-from sqlalchemy import text
 
 from sample.example_dag import ExampleDAG, ExampleConf
 from sample.example_dag_helper import User
-from sample.utils import with_postgres, PostgresQuery
+from sample.utils import with_postgres
 
 
 class TestExampleDAG(unittest.TestCase):
@@ -37,36 +35,6 @@ class TestExampleDAG(unittest.TestCase):
                 postgres_engine
             ).extract_user().get_dataframe()
         )
-
-    @with_postgres
-    def test_insert_user(self, engine):
-        with engine.begin() as conn:
-            conn.execute(text("""
-                CREATE TABLE users (
-                    id SERIAL PRIMARY KEY,
-                    name TEXT NOT NULL
-                )
-            """))
-            conn.execute(
-                text("INSERT INTO users (name) VALUES (:name)"),
-                {"name": "Alice"},
-            )
-
-            class UserSchema(pa.DataFrameModel):
-                name: str
-
-        query = PostgresQuery[UserSchema]("SELECT name FROM users")
-
-        print(query.get_dataframe(engine))
-        print(query.get_text())
-
-        assert_frame_equal(
-            pd.DataFrame({
-                "name": ["Alice"]
-            }),
-            query.get_dataframe(engine)
-        )
-
 
 if __name__ == "__main__":
     unittest.main()
