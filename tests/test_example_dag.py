@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sample.utils import with_postgres
 
 
-class TestDatabase(unittest.TestCase):
+class TestExampleDAG(unittest.TestCase):
 
     @with_postgres
     def test_insert_user(self, engine):
