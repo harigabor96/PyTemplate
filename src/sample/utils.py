@@ -27,7 +27,10 @@ def with_postgres(func):
 
     return wrapper
 
+
 SchemaType = TypeVar("SchemaType", bound=pa.DataFrameModel)
+
+
 class PostgresQuery:
     schema: type[pa.DataFrameModel]
 

@@ -12,6 +12,7 @@ class ExampleConf:
     source_table_user: str
     sink_table_avg_age: str
 
+
 class ExampleDAG:
     def __init__(self, conf: ExampleConf, postgres_engine: Engine):
         self.conf = conf

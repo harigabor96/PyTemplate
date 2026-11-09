@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import MagicMock
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
@@ -20,21 +21,26 @@ class TestExampleDAG(unittest.TestCase):
         }))
 
         test_dataframe.to_sql(
-            con = postgres_engine,
-            name = test_table,
-            index = False
+            con=postgres_engine,
+            name=test_table,
+            index=False
         )
+
+        mock_conf = MagicMock()
+        mock_conf.source_table_user = test_table
+        mock_conf.sink_table_avg_age = "NEEDS TO BE MOCKED"
 
         assert_frame_equal(
             test_dataframe,
             ExampleDAG(
                 ExampleConf(
-                    source_table_user = test_table,
-                    sink_table_avg_age = "NEEEDS TO BE MOCKETD"
+                    source_table_user=test_table,
+                    sink_table_avg_age="NEEEDS TO BE MOCKETD"
                 ),
                 postgres_engine
             ).extract_user().get_dataframe()
         )
+
 
 if __name__ == "__main__":
     unittest.main()
