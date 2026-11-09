@@ -27,7 +27,7 @@ class TestExampleDAG(unittest.TestCase):
             class UserSchema(pa.DataFrameModel):
                 name: str
 
-        query = PostgresQuery(engine, "SELECT name FROM users", UserSchema)
+        query = PostgresQuery[UserSchema](engine, "SELECT name FROM users")
 
         print(query.get_result())
         print(query.get_query())
