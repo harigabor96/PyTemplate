@@ -40,28 +40,31 @@ class TestExampleDAG(unittest.TestCase):
     @with_postgres
     def test_transform_avg_age(self, postgres_engine):
         test_table = "test_table"
-        test_dataframe = User.validate(pd.DataFrame({
+
+        User.validate(pd.DataFrame({
             "id": [1, 2, 3],
             "name": ["Alice", "Bob", "Charlie"],
             "age": [25, 30, 35],
-        }))
-
-        test_dataframe.to_sql(
+        })).to_sql(
             con=postgres_engine,
             name=test_table,
             index=False
         )
 
-        assert_frame_equal(
-            AvgAge.validate(pd.DataFrame({
-                "avg_age": [30.0],
-            })),
+        result = (
             ExampleDAG(
                 MagicMock(),
                 postgres_engine
             ).transform_avg_age(
                 PostgresQuery[User](postgres_engine, f"SELECT * FROM {test_table}")
             ).get_dataframe()
+        )
+
+        assert_frame_equal(
+            AvgAge.validate(pd.DataFrame({
+                "avg_age": [30.0],
+            })),
+            result
         )
 
     @with_postgres
