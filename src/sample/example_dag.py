@@ -21,7 +21,7 @@ class ExampleDAG:
     def execute(self) -> None:
         extract_user_query = self.extract_user()
         transform_avg_age = self.transform_avg_age(extract_user_query)
-        self.load_sink(transform_avg_age)
+        self.load_avg_age(transform_avg_age)
 
     def extract_user(self) -> PostgresQuery[User]:
         return PostgresQuery[User](self.postgres_engine, f"""
@@ -34,7 +34,7 @@ class ExampleDAG:
             FROM ({extract_user_query.get_text()})
         """)
 
-    def load_sink(self, transform_avg_age_query: PostgresQuery[AvgAge]) -> None:
+    def load_avg_age(self, transform_avg_age_query: PostgresQuery[AvgAge]) -> None:
         with self.postgres_engine.begin() as conn:
             conn.execute(text(f"""
                 INSERT INTO {self.conf.sink_table_avg_age} (age)
