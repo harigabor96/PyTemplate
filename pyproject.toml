@@ -121,7 +121,8 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "alembic>=1.14",
     "testcontainers[postgres]>=4.0",
-    "pandas>=2.2"
+    "pandas>=2.2",
+    "pandera[pandas]>=0.26"
 ]
 
 # List additional groups of dependencies here (e.g. development

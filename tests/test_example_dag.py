@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+import pandera.pandas as pa
 from pandas.testing import assert_frame_equal
 from sqlalchemy import text
 
@@ -23,7 +24,10 @@ class TestExampleDAG(unittest.TestCase):
                 {"name": "Alice"},
             )
 
-        query = PostgresQuery(engine, "SELECT name FROM users")
+            class UserSchema(pa.DataFrameModel):
+                name: str
+
+        query = PostgresQuery(engine, "SELECT name FROM users", UserSchema)
 
         print(query.get_result())
         print(query.get_query())
