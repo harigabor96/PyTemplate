@@ -1,29 +1,41 @@
 from dataclasses import dataclass
 
+from sqlalchemy import Engine
+from sqlalchemy import text
+
+from sample.example_dag_helper import AvgAge, User
+from sample.utils import PostgresQuery
+
+
 @dataclass
 class ExampleConf:
-    source_string: str
+    source_table_user: str
+    sink_table_avg_age: str
 
 class ExampleDAG:
-    def __init__(self, conf: ExampleConf): self.conf = conf
+    def __init__(self, conf: ExampleConf, postgres_engine: Engine):
+        self.conf = conf
+        self.postgres_engine = postgres_engine
 
     def execute(self) -> None:
-        source_data = self.extract_source()
-        sink_data = self.transform_sink(source_data)
-        self.load_sink(sink_data)
+        extract_user_query = self.extract_user()
+        transform_avg_age = self.transform_avg_age(extract_user_query)
+        self.load_sink(transform_avg_age)
 
-    def extract_source(self) -> str:
-        return self.conf.source_string
-
-    def transform_sink(self, source_data: str) -> str:
-        return source_data + " POTATOO!"
-
-    def load_sink(self, sink_data: str) -> None:
-        print(sink_data)
-
-if __name__ == "__main__":
-    ExampleDAG(
-        conf = ExampleConf(
-            source_string = "CARRRROT!"
+    def extract_user(self) -> PostgresQuery[User]:
+        return PostgresQuery[User](
+            f"SELECT * FROM {self.conf.source_table_user};"
         )
-    ).execute()
+
+    def transform_avg_age(self, extract_user_query: PostgresQuery[User]) -> PostgresQuery[AvgAge]:
+        return PostgresQuery[AvgAge](f"""
+            SELECT age
+            FROM ({extract_user_query.get_text()})
+        """)
+
+    def load_sink(self, transform_avg_age_query: PostgresQuery[AvgAge]) -> None:
+        with self.postgres_engine.begin() as conn:
+            conn.execute(text(f"""
+                INSERT INTO {self.conf.sink_table_avg_age} (age)
+                FROM ({transform_avg_age_query.get_text()})
+            """))
