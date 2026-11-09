@@ -78,6 +78,15 @@ class TestExampleDAG(unittest.TestCase):
             index=False
         )
 
+        AvgAge.validate(pd.DataFrame({
+            "avg_age": [],
+        })).to_sql(
+            con=postgres_engine,
+            name=test_sink,
+            index=False
+        )
+
+
         mock_conf = MagicMock()
         mock_conf.sink_table_avg_age = test_sink
 
