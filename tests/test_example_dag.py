@@ -52,14 +52,12 @@ class TestExampleDAG(unittest.TestCase):
             index=False
         )
 
-        mock_conf = MagicMock()
-
         assert_frame_equal(
             AvgAge.validate(pd.DataFrame({
                 "avg_age": [30.0],
             })),
             ExampleDAG(
-                mock_conf,
+                MagicMock(),
                 postgres_engine
             ).transform_avg_age(
                 PostgresQuery[User](postgres_engine, f"SELECT * FROM {test_table}")
