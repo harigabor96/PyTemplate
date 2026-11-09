@@ -28,15 +28,11 @@ class TestExampleDAG(unittest.TestCase):
 
         mock_conf = MagicMock()
         mock_conf.source_table_user = test_table
-        mock_conf.sink_table_avg_age = "NEEDS TO BE MOCKED"
 
         assert_frame_equal(
             test_dataframe,
             ExampleDAG(
-                ExampleConf(
-                    source_table_user=test_table,
-                    sink_table_avg_age="NEEEDS TO BE MOCKETD"
-                ),
+                mock_conf,
                 postgres_engine
             ).extract_user().get_dataframe()
         )
