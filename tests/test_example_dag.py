@@ -1,8 +1,10 @@
 import unittest
 
+import pandas as pd
+from pandas.testing import assert_frame_equal
 from sqlalchemy import text
 
-from sample.utils import with_postgres
+from sample.utils import with_postgres, PostgresQuery
 
 
 class TestExampleDAG(unittest.TestCase):
@@ -21,12 +23,17 @@ class TestExampleDAG(unittest.TestCase):
                 {"name": "Alice"},
             )
 
-        with engine.connect() as conn:
-            result = conn.execute(
-                text("SELECT name FROM users")
-            )
+        query = PostgresQuery(engine, "SELECT name FROM users")
 
-            self.assertEqual(result.scalar_one(), "Alice")
+        print(query.get_result())
+        print(query.get_query())
+
+        assert_frame_equal(
+            pd.DataFrame({
+                "name": ["Alice"]
+            }),
+            query.get_result()
+        )
 
 
 if __name__ == "__main__":
