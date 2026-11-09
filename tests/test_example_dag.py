@@ -68,11 +68,10 @@ class TestExampleDAG(unittest.TestCase):
     def test_load_sink(self, postgres_engine):
         test_source = "test_source"
         test_sink = "test_sink"
-        test_dataframe = AvgAge.validate(pd.DataFrame({
-            "avg_age": [30.0],
-        }))
 
-        test_dataframe.to_sql(
+        AvgAge.validate(pd.DataFrame({
+            "avg_age": [30.0],
+        })).to_sql(
             con=postgres_engine,
             name=test_source,
             index=False
@@ -88,7 +87,6 @@ class TestExampleDAG(unittest.TestCase):
 
         mock_conf = MagicMock()
         mock_conf.sink_table_avg_age = test_sink
-
         ExampleDAG(
             mock_conf,
             postgres_engine
@@ -97,8 +95,10 @@ class TestExampleDAG(unittest.TestCase):
         )
 
         assert_frame_equal(
-            test_dataframe,
-            PostgresQuery[AvgAge](postgres_engine, f"SELECT * FROM {test_source}").get_dataframe()
+            AvgAge.validate(pd.DataFrame({
+                "avg_age": [30.0],
+            })),
+            PostgresQuery[AvgAge](postgres_engine, f"SELECT * FROM {test_sink}").get_dataframe()
         )
 
 
