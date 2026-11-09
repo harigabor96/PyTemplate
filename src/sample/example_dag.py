@@ -23,12 +23,12 @@ class ExampleDAG:
         self.load_sink(transform_avg_age)
 
     def extract_user(self) -> PostgresQuery[User]:
-        return PostgresQuery[User](
-            f"SELECT * FROM {self.conf.source_table_user};"
-        )
+        return PostgresQuery[User](self.postgres_engine, f"""
+            SELECT * FROM {self.conf.source_table_user};
+        """)
 
     def transform_avg_age(self, extract_user_query: PostgresQuery[User]) -> PostgresQuery[AvgAge]:
-        return PostgresQuery[AvgAge](f"""
+        return PostgresQuery[AvgAge](self.postgres_engine, f"""
             SELECT age
             FROM ({extract_user_query.get_text()})
         """)

@@ -38,14 +38,15 @@ class PostgresQuery:
             {"schema": schema},
         )
 
-    def __init__(self, query: str):
+    def __init__(self, postgres_engine: Engine, query: str):
         self.query = query
+        self.postgres_engine = postgres_engine
 
     def get_text(self) -> str:
         return self.query
 
-    def get_dataframe(self, engine: Engine) -> pd.DataFrame:
-        with engine.connect() as connection:
+    def get_dataframe(self) -> pd.DataFrame:
+        with self.postgres_engine.connect() as connection:
             df = pd.read_sql_query(
                 sql=text(self.query),
                 con=connection,
