@@ -13,23 +13,10 @@ def with_postgres():
     )
 
     postgres.start()
-
-    engine = create_engine(
-        postgres.get_connection_url()
-    )
+    engine = create_engine(postgres.get_connection_url())
 
     try:
-        # Initialize database schema
-        with engine.begin() as conn:
-            conn.execute(text("""
-                CREATE TABLE users (
-                    id SERIAL PRIMARY KEY,
-                    name TEXT NOT NULL
-                )
-            """))
-
         yield engine
-
     finally:
         engine.dispose()
         postgres.stop()

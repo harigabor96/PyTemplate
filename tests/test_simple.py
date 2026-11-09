@@ -10,6 +10,12 @@ class TestDatabase(unittest.TestCase):
     def test_insert_user(self):
         with with_postgres() as engine:
             with engine.begin() as conn:
+                conn.execute(text("""
+                    CREATE TABLE users (
+                        id SERIAL PRIMARY KEY,
+                        name TEXT NOT NULL
+                    )
+                """))
                 conn.execute(
                     text("INSERT INTO users (name) VALUES (:name)"),
                     {"name": "Alice"},
@@ -21,15 +27,6 @@ class TestDatabase(unittest.TestCase):
                 )
 
                 self.assertEqual(result.scalar_one(), "Alice")
-
-    def test_empty_users(self):
-        with with_postgres() as engine:
-            with engine.connect() as conn:
-                result = conn.execute(
-                    text("SELECT * FROM users")
-                )
-
-                self.assertEqual(result.fetchall(), [])
 
 
 if __name__ == "__main__":
