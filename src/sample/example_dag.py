@@ -14,14 +14,14 @@ class ExampleConf:
 
 
 class ExampleDAG:
-    def __init__(self, conf: ExampleConf, postgres_engine: Engine):
+    def __init__(self, conf: ExampleConf, postgres_engine: Engine) -> None:
         self.conf = conf
         self.postgres_engine = postgres_engine
 
     def execute(self) -> None:
         extract_user_query = self.extract_user()
-        transform_avg_age = self.transform_avg_age(extract_user_query)
-        self.load_avg_age(transform_avg_age)
+        transform_avg_age_query = self.transform_avg_age(extract_user_query)
+        self.load_avg_age(transform_avg_age_query)
 
     def extract_user(self) -> PostgresQuery[User]:
         return PostgresQuery[User](self.postgres_engine, f"""
@@ -39,6 +39,5 @@ class ExampleDAG:
         with self.postgres_engine.begin() as conn:
             conn.execute(text(f"""
                 INSERT INTO {self.conf.sink_table_avg_age} (avg_age)
-                SELECT avg_age
-                FROM ({transform_avg_age_query.get_text()})
+                {transform_avg_age_query.get_text()}
             """))
